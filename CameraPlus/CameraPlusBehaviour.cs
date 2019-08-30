@@ -218,6 +218,9 @@ namespace CameraPlus
 
             FirstPersonOffset = Config.FirstPersonPositionOffset;
 
+            _screenCamera.gameObject.AddComponent<ChromaticAbberation>();
+            _screenCamera.gameObject.AddComponent<FisheyeEffect>();
+
             SceneManager_activeSceneChanged(new Scene(), new Scene());
             Plugin.Log($"Camera \"{Path.GetFileName(Config.FilePath)}\" successfully initialized!\"");
         }
