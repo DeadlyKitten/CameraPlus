@@ -14,7 +14,6 @@ namespace CameraPlus
         public float rotationSmooth = 5;
 
         public bool thirdPerson = false;
-        public bool droneCam = false;
         public bool showThirdPersonCamera = true;
 
         public float posx;
@@ -29,6 +28,10 @@ namespace CameraPlus
         public float firstPersonPosOffsetY;
         public float firstPersonPosOffsetZ;
 
+        public float firstPersonRotOffsetX;
+        public float firstPersonRotOffsetY;
+        public float firstPersonRotOffsetZ;
+
         public int screenWidth = Screen.width;
         public int screenHeight = Screen.height;
         public int screenPosX;
@@ -38,7 +41,7 @@ namespace CameraPlus
 
         public bool fitToCanvas = false;
         public bool transparentWalls = false;
-
+        public bool forceFirstPersonUpRight = false;
         public string movementScriptPath = String.Empty;
         //public int maxFps = 90;
 
@@ -120,8 +123,28 @@ namespace CameraPlus
                 firstPersonPosOffsetZ = value.z;
             }
         }
+        public Vector3 FirstPersonRotationOffset
+        {
+            get
+            {
+                return new Vector3(firstPersonRotOffsetX, firstPersonRotOffsetY, firstPersonRotOffsetZ);
+            }
+            set
+            {
+                firstPersonRotOffsetX = value.x;
+                firstPersonRotOffsetY = value.y;
+                firstPersonRotOffsetZ = value.z;
+            }
+        }
 
         public Vector3 DefaultFirstPersonPositionOffset
+        {
+            get
+            {
+                return new Vector3(0, 0, 0);
+            }
+        }
+        public Vector3 DefaultFirstPersonRotationOffset
         {
             get
             {
@@ -140,7 +163,7 @@ namespace CameraPlus
             {
                 Load();
                 var text = File.ReadAllText(FilePath);
-                if (!text.Contains("fitToCanvas") && Path.GetFileName(FilePath) == "cameraplus.cfg")
+                if (!text.Contains("fitToCanvas") && Path.GetFileName(FilePath) == $"{Plugin.MainCamera}.cfg")
                 {
                     fitToCanvas = true;
                 }
@@ -175,6 +198,9 @@ namespace CameraPlus
         {
             _saving = true;
             ConfigSerializer.SaveConfig(this, FilePath);
+            // sets saving back to false cause SaveConfig wont write the file at all if nothing has changed
+            // and if so the FileWatcher would not get triggered so saving would stuck at true
+            _saving = false;
         }
 
         public void Load()
